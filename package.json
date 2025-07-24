@@ -55,7 +55,8 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
-    "metro-react-native-babel-transformer": "^0.77.0"
+    "metro-react-native-babel-transformer": "^0.77.0",
+    "babel-plugin-transform-remove-console": "^6.9.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
