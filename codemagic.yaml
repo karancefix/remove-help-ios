@@ -17,6 +17,8 @@ workflows:
         FCI_APP_ID: 6748972075
         # Add Node.js version for consistency
         NODE_VERSION: 18
+        # Disable Expo telemetry to speed up builds
+        EXPO_NO_TELEMETRY: 1
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.remove.help
@@ -28,63 +30,59 @@ workflows:
         script: |
           # Clear npm cache to avoid conflicts
           npm cache clean --force
-          # Install dependencies
-          npm install
-      - name: Clear Expo and React Native caches
+          # Install dependencies with legacy peer deps flag
+          npm install --legacy-peer-deps
+      - name: Install Expo CLI globally
+        script: |
+          # Install latest Expo CLI
+          npm install -g @expo/cli@latest
+          # Verify installation
+          expo --version
+      - name: Clear caches and prepare for prebuild
         script: |
           # Clear Expo cache
-          npx expo install --fix
+          rm -rf ~/.expo
           # Clear Metro cache
-          npx react-native start --reset-cache || true
-          # Clear watchman if available
-          watchman watch-del-all || true
-      - name: Run Expo Prebuild with clean slate
-        script: |
-          # Remove any existing ios directory to ensure clean prebuild
+          rm -rf node_modules/.cache
+          # Clear npm cache again
+          npm cache clean --force
+          # Clear any existing native directories
           rm -rf ios android
-          # Run prebuild with clean flag and verbose output
-          npx expo prebuild --clean --platform ios --verbose
-          # Verify ios directory was created
-          ls -la ios/
-      - name: Generate React Native Codegen files
+      - name: Run Expo Prebuild
         script: |
-          cd ios
-          # Ensure codegen runs properly
-          npx react-native codegen --verbose || true
-          # Alternative: Run the codegen script directly if it exists
-          if [ -f "../node_modules/@react-native/codegen/lib/cli/combine/combine-js-to-schema-cli.js" ]; then
-            node ../node_modules/@react-native/codegen/lib/cli/combine/combine-js-to-schema-cli.js
+          # Run prebuild with clean flag (removed --verbose as it's not supported)
+          npx expo prebuild --clean --platform ios
+          # Verify ios directory was created
+          if [ -d "ios" ]; then
+            echo "✅ iOS directory created successfully"
+            ls -la ios/
+          else
+            echo "❌ iOS directory was not created"
+            exit 1
           fi
-          # Create the build directory structure if it doesn't exist
-          mkdir -p build/generated/ios
-          # List what was generated
-          find . -name "*generated*" -type f || echo "No generated files found yet"
       - name: Install CocoaPods dependencies
         script: |
           cd ios
           # Update CocoaPods repo
           pod repo update
-          # Clean install
+          # Clean any existing installation
           pod deintegrate || true
-          pod install --repo-update --verbose
-      - name: Pre-build codegen verification
+          # Install with repo update
+          pod install --repo-update
+      - name: Verify Xcode project setup
         script: |
           cd ios
-          # Check if the required generated files exist
-          echo "Checking for generated files..."
-          find . -path "*/build/generated/ios/*" -name "*generated*" || echo "Generated files not found in expected location"
-          # Try to trigger codegen manually if files are missing
-          if [ ! -d "build/generated/ios" ]; then
-            echo "Creating build directory structure..."
-            mkdir -p build/generated/ios
-            # Run React Native codegen
-            cd ..
-            npx react-native codegen || echo "Codegen command not available"
-            cd ios
+          # Check if workspace exists
+          if [ -f "$FCI_WORKSPACE" ]; then
+            echo "✅ Xcode workspace found: $FCI_WORKSPACE"
+          else
+            echo "❌ Xcode workspace not found: $FCI_WORKSPACE"
+            # List available workspaces and projects
+            echo "Available files:"
+            ls -la *.xcworkspace *.xcodeproj || echo "No Xcode files found"
+            exit 1
           fi
-          # List all generated files
-          find . -name "*generated*" -type f
-      - name: Set up provisioning profiles settings on Xcode project
+      - name: Set up provisioning profiles
         script: |
           cd ios
           xcode-project use-profiles
@@ -102,42 +100,7 @@ workflows:
           # Clean Xcode build
           xcodebuild clean -workspace "$FCI_WORKSPACE" -scheme "$FCI_SCHEME"
           
-          # Try to generate missing codegen files before building
-          echo "Attempting to generate missing codegen files..."
-          
-          # Create the required directory structure
-          mkdir -p build/generated/ios/rnreanimated
-          mkdir -p build/generated/ios/rnscreens  
-          mkdir -p build/generated/ios/rnsvg
-          mkdir -p build/generated/ios/safeareacontext
-          
-          # Create empty placeholder files to prevent build errors
-          # These will be replaced by actual codegen if it runs
-          touch build/generated/ios/rnreanimated-generated.mm
-          touch build/generated/ios/rnreanimatedJSI-generated.cpp
-          touch build/generated/ios/rnscreens/rnscreens-generated.mm
-          touch build/generated/ios/rnscreensJSI-generated.cpp
-          touch build/generated/ios/rnsvg/rnsvg-generated.mm
-          touch build/generated/ios/rnsvgJSI-generated.cpp
-          touch build/generated/ios/safeareacontext/safeareacontext-generated.mm
-          touch build/generated/ios/safeareacontextJSI-generated.cpp
-          
-          # Add minimal content to prevent compilation errors
-          echo "// Generated placeholder file" > build/generated/ios/rnreanimated-generated.mm
-          echo "// Generated placeholder file" > build/generated/ios/rnreanimatedJSI-generated.cpp
-          echo "// Generated placeholder file" > build/generated/ios/rnscreens/rnscreens-generated.mm
-          echo "// Generated placeholder file" > build/generated/ios/rnscreensJSI-generated.cpp
-          echo "// Generated placeholder file" > build/generated/ios/rnsvg/rnsvg-generated.mm
-          echo "// Generated placeholder file" > build/generated/ios/rnsvgJSI-generated.cpp
-          echo "// Generated placeholder file" > build/generated/ios/safeareacontext/safeareacontext-generated.mm
-          echo "// Generated placeholder file" > build/generated/ios/safeareacontextJSI-generated.cpp
-          
-          # Verify files exist
-          echo "Verifying generated files exist:"
-          ls -la build/generated/ios/
-          ls -la build/generated/ios/*/
-          
-          # Build with proper settings and error handling
+          # Build with proper error handling
           set -e
           xcode-project build-ipa \
             --workspace "$FCI_WORKSPACE" \
