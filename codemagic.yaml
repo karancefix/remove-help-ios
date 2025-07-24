@@ -4,12 +4,7 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
-      app_store_connect:
-        name: ios_app_store
-        type: app_store_credentials
-        filePath: "codemagic.json"
-        source: codemagic
-        group: "1"
+      app_store_connect: CodeMagic # Use the name you gave your API key in Codemagic UI
     environment:
       groups:
         - "1"
