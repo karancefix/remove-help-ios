@@ -104,9 +104,7 @@ workflows:
           set -e
           xcode-project build-ipa \
             --workspace "$FCI_WORKSPACE" \
-            --scheme "$FCI_SCHEME" \
-            --config "Release" \
-            --disable-automatic-code-signing
+            --scheme "$FCI_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
