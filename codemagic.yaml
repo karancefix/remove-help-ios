@@ -8,12 +8,13 @@ workflows:
     environment:
       groups:
         - "1"
+      vars:
+        EXPO_PUBLIC_SUPABASE_URL: https://kpzpsljkpvalemxgzsis.supabase.co
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwenBzbGprcHZhbGVteGd6c2lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3MzA0MjcsImV4cCI6MjA2ODMwNjQyN30.XdA0tKO6FiiY_4eztqkeCTA-kqAmIP0KILL_u79wts4
+        NODE_ENV: production
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.remove.help
-      vars:
-        EXPO_PUBLIC_SUPABASE_URL: $EXPO_PUBLIC_SUPABASE_URL
-        EXPO_PUBLIC_SUPABASE_ANON_KEY: $EXPO_PUBLIC_SUPABASE_ANON_KEY
         XCODE_WORKSPACE: "RemoveHelp.xcworkspace"
         XCODE_SCHEME: "RemoveHelp"
         APP_STORE_APPLE_ID: 6748972075
@@ -25,28 +26,25 @@ workflows:
       - name: Run Expo Prebuild
         script: |
           npx expo prebuild --clean
-          # Ensure proper iOS deployment target
-          cd ios
-          sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = [0-9]*\.[0-9]*/IPHONEOS_DEPLOYMENT_TARGET = 13.0/g' RemoveHelp.xcodeproj/project.pbxproj
       - name: Install CocoaPods dependencies
         script: cd ios && pod install
       - name: Set up provisioning profiles settings on Xcode project
         script: xcode-project use-profiles
       - name: Increment build number
         script: |
-          cd $CM_BUILD_DIR/ios
+          cd ios
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
           agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
       - name: Build ipa for distribution
         script: |
           # Clean build directory
-          cd $CM_BUILD_DIR/ios
+          cd ios
           rm -rf build/
           xcodebuild clean -workspace "$XCODE_WORKSPACE" -scheme "$XCODE_SCHEME"
           
           # Build with proper settings
           xcode-project build-ipa \
-            --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+            --workspace "$XCODE_WORKSPACE" \
             --scheme "$XCODE_SCHEME" \
             --config "Release"
     artifacts:

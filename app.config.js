@@ -74,7 +74,7 @@ export default () => {
             enableShrinkResourcesInReleaseBuilds: false
           },
           ios: {
-            deploymentTarget: "13.0"
+            deploymentTarget: "15.1"
           }
         }
       ]
