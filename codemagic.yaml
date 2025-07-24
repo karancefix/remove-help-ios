@@ -12,12 +12,12 @@ workflows:
         EXPO_PUBLIC_SUPABASE_URL: https://kpzpsljkpvalemxgzsis.supabase.co
         EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwenBzbGprcHZhbGVteGd6c2lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3MzA0MjcsImV4cCI6MjA2ODMwNjQyN30.XdA0tKO6FiiY_4eztqkeCTA-kqAmIP0KILL_u79wts4
         NODE_ENV: production
+      XCODE_WORKSPACE: "RemoveHelp.xcworkspace"
+      XCODE_SCHEME: "RemoveHelp"
+      APP_STORE_APPLE_ID: 6748972075
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.remove.help
-        XCODE_WORKSPACE: "RemoveHelp.xcworkspace"
-        XCODE_SCHEME: "RemoveHelp"
-        APP_STORE_APPLE_ID: 6748972075
       xcode: latest
       cocoapods: default
     scripts:
