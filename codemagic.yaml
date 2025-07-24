@@ -70,147 +70,25 @@ workflows:
           # Install with repo update
           pod install --repo-update
       - name: Generate React Native codegen files
-        script: |
-          # Run codegen from the root directory
-          echo "Generating React Native codegen files..."
-          
-          # Create the build directory structure
-          mkdir -p ios/build/generated/ios
-          
-          # Run React Native codegen to generate the missing files
-          cd ios
-          
-          # Generate codegen files using xcodebuild
-          echo "Running xcodebuild to generate codegen files..."
-          xcodebuild -workspace "$FCI_WORKSPACE" -scheme "$FCI_SCHEME" -configuration Release -destination generic/platform=iOS build-for-testing ONLY_ACTIVE_ARCH=NO
-          
-          # Verify the generated files exist
-          echo "Checking for generated files..."
-          find build/generated -name "*.cpp" -o -name "*.mm" | head -10
-          
-          # If files still don't exist, create minimal stub files to prevent build errors
-          if [ ! -f "build/generated/ios/rnreanimatedJSI-generated.cpp" ]; then
-            echo "Creating stub files for missing codegen files..."
-            
-            # Create directory structure
-            mkdir -p build/generated/ios/react/renderer/components/rngesturehandler_codegen
-            mkdir -p build/generated/ios/react/renderer/components/rnscreens
-            mkdir -p build/generated/ios/rnscreens
-            mkdir -p build/generated/ios/rnsvg
-            mkdir -p build/generated/ios/safeareacontext
-            
-            # Create minimal stub files with proper C++ syntax
-            cat > build/generated/ios/rnreanimatedJSI-generated.cpp << 'EOF'
-          // Auto-generated stub file
-          #include <jsi/jsi.h>
-          namespace facebook { namespace react {
-            // Stub implementation
-          }}
-          EOF
-            
-            cat > build/generated/ios/rnscreensJSI-generated.cpp << 'EOF'
-          // Auto-generated stub file
-          #include <jsi/jsi.h>
-          namespace facebook { namespace react {
-            // Stub implementation
-          }}
-          EOF
-            
-            cat > build/generated/ios/rnsvgJSI-generated.cpp << 'EOF'
-          // Auto-generated stub file
-          #include <jsi/jsi.h>
-          namespace facebook { namespace react {
-            // Stub implementation
-          }}
-          EOF
-            
-            cat > build/generated/ios/safeareacontextJSI-generated.cpp << 'EOF'
-          // Auto-generated stub file
-          #include <jsi/jsi.h>
-          namespace facebook { namespace react {
-            // Stub implementation
-          }}
-          EOF
-            
-            cat > build/generated/ios/react/renderer/components/rngesturehandler_codegen/States.cpp << 'EOF'
-          // Auto-generated stub file
-          #include <react/renderer/components/rngesturehandler_codegen/States.h>
-          namespace facebook { namespace react {
-            // Stub implementation
-          }}
-          EOF
-            
-            cat > build/generated/ios/react/renderer/components/rnscreens/States.cpp << 'EOF'
-          // Auto-generated stub file
-          #include <react/renderer/components/rnscreens/States.h>
-          namespace facebook { namespace react {
-            // Stub implementation
-          }}
-          EOF
-            
-            cat > build/generated/ios/rnscreens/rnscreens-generated.mm << 'EOF'
-          // Auto-generated stub file
-          #import <Foundation/Foundation.h>
-          // Stub implementation
-          EOF
-            
-            cat > build/generated/ios/rnsvg/rnsvg-generated.mm << 'EOF'
-          // Auto-generated stub file
-          #import <Foundation/Foundation.h>
-          // Stub implementation
-          EOF
-            
-            cat > build/generated/ios/safeareacontext/safeareacontext-generated.mm << 'EOF'
-          // Auto-generated stub file
-          #import <Foundation/Foundation.h>
-          // Stub implementation
-          EOF
-            
-            echo "✅ Stub files created successfully"
-          fi
-          
-          # List all generated files
-          echo "Final generated files:"
-          find build/generated -type f | sort
-      - name: Verify Xcode project setup
-        script: |
-          cd ios
-          # Check if workspace exists (it's a directory, not a file)
-          if [ -d "$FCI_WORKSPACE" ]; then
-            echo "✅ Xcode workspace found: $FCI_WORKSPACE"
-          else
-            echo "❌ Xcode workspace not found: $FCI_WORKSPACE"
-            # List available workspaces and projects
-            echo "Available files:"
-            ls -la *.xcworkspace *.xcodeproj || echo "No Xcode files found"
-            exit 1
-          fi
-      - name: Set up provisioning profiles
-        script: |
-          cd ios
-          xcode-project use-profiles
+        scripts:
+      - name: Install npm dependencies
+        script: npm install
+      - name: Run Expo Prebuild
+        script: npx expo prebuild
+      - name: Install CocoaPods dependencies
+        script: cd ios && pod install
+      - name: Set up provisioning profiles settings on Xcode project
+        script: xcode-project use-profiles
       - name: Increment build number
         script: |
-          cd ios
-          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "${FCI_APP_ID}")
+          cd $CM_BUILD_DIR/ios
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
           agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
       - name: Build ipa for distribution
         script: |
-          cd ios
-          
-          # Verify codegen files exist before building
-          echo "Verifying codegen files before build..."
-          if [ ! -f "build/generated/ios/rnreanimatedJSI-generated.cpp" ]; then
-            echo "❌ Missing codegen files, build will fail"
-            exit 1
-          fi
-          echo "✅ Codegen files verified"
-          
-          # Build IPA using CodeMagic's xcode-project tool
-          set -e
           xcode-project build-ipa \
-            --workspace "$FCI_WORKSPACE" \
-            --scheme "$FCI_SCHEME"
+            --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -220,4 +98,5 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        submit_to_app_store: true
+        submit_to_app_store: true 
+
