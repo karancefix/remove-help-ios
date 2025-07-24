@@ -72,8 +72,8 @@ workflows:
       - name: Verify Xcode project setup
         script: |
           cd ios
-          # Check if workspace exists
-          if [ -f "$FCI_WORKSPACE" ]; then
+          # Check if workspace exists (it's a directory, not a file)
+          if [ -d "$FCI_WORKSPACE" ]; then
             echo "✅ Xcode workspace found: $FCI_WORKSPACE"
           else
             echo "❌ Xcode workspace not found: $FCI_WORKSPACE"
