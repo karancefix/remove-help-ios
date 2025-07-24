@@ -54,13 +54,13 @@
     "react-native-svg": "15.11.2",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.20.0",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "metro-react-native-babel-transformer": "^0.77.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@react-native-community/cli": "latest",
     "@types/react": "~19.0.10",
-    "metro-react-native-babel-transformer": "^0.77.0",
     "typescript": "~5.8.3"
   }
 }
