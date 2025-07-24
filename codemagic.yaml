@@ -4,9 +4,12 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
-      app_store_connect: 
-        app_id: 6748972075 # APP_STORE_APPLE_ID moved here
-        key_id: CodeMagic # Use the name you gave your API key in Codemagic UI
+      app_store_connect:
+        name: ios_app_store
+        type: app_store_credentials
+        filePath: "codemagic.json"
+        source: codemagic
+        group: "1"
     environment:
       groups:
         - "1"
@@ -14,9 +17,9 @@ workflows:
         EXPO_PUBLIC_SUPABASE_URL: https://kpzpsljkpvalemxgzsis.supabase.co
         EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwenBzbGprcHZhbGVteGd6c2lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3MzA0MjcsImV4cCI6MjA2ODMwNjQyN30.XdA0tKO6FiiY_4eztqkeCTA-kqAmIP0KILL_u79wts4
         NODE_ENV: production
-      xcode_project:
-        workspace: "RemoveHelp.xcworkspace"
-        scheme: "RemoveHelp"
+        FCI_WORKSPACE: "RemoveHelp.xcworkspace"
+        FCI_SCHEME: "RemoveHelp"
+        FCI_APP_ID: 6748972075
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.remove.help
