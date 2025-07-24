@@ -100,7 +100,7 @@ workflows:
           # Clean Xcode build
           xcodebuild clean -workspace "$FCI_WORKSPACE" -scheme "$FCI_SCHEME"
           
-          # Build with proper error handling
+          # Build IPA using CodeMagic's xcode-project tool
           set -e
           xcode-project build-ipa \
             --workspace "$FCI_WORKSPACE" \
