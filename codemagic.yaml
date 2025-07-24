@@ -34,10 +34,10 @@ workflows:
           npm install --legacy-peer-deps
       - name: Install Expo CLI globally
         script: |
-          # Install latest Expo CLI
-          npm install -g @expo/cli@latest
-          # Verify installation
-          expo --version
+          # Install latest Expo CLI locally and verify
+          npm install @expo/cli@latest
+          # Verify installation using npx
+          npx expo --version
       - name: Clear caches and prepare for prebuild
         script: |
           # Clear Expo cache
@@ -51,7 +51,7 @@ workflows:
       - name: Run Expo Prebuild
         script: |
           # Run prebuild with clean flag (removed --verbose as it's not supported)
-          npx expo prebuild --clean --platform ios
+          npx expo prebuild --clean --platform ios --npm
           # Verify ios directory was created
           if [ -d "ios" ]; then
             echo "✅ iOS directory created successfully"
