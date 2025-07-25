@@ -81,14 +81,14 @@ export default () => {
     experiments: {
       typedRoutes: true
     },
-    owner: "cursor1",
+    owner: "cursor3",
     extra: {
       // Ensure environment variables are available at runtime
       EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
       EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
       router: {},
       eas: {
-        projectId: "194f7ed6-16f4-4b42-9465-0e21677d7b95"
+        projectId: "9f411f8d-1981-4660-8527-5513c227e160"
       }
     }
   };
