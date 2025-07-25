@@ -18,7 +18,7 @@ export default () => {
   return {
     name: "Remove.Help",
     slug: "remove",
-    version: "1.0.7",
+    version: "1.0.8",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "myapp",

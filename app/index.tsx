@@ -4,9 +4,9 @@ import { View, Text } from 'react-native';
 export default function Index() {
   console.log('Index screen loaded');
   
-  // Navigate immediately without hooks
+  // Navigate to onboarding instead of test (since app works now)
   setTimeout(() => {
-    router.replace('/test');
+    router.replace('/onboarding');
   }, 100);
 
   // Show loading screen while navigating
