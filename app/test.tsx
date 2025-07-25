@@ -16,7 +16,7 @@ export default function TestScreen() {
         fontWeight: 'bold',
         textAlign: 'center'
       }}>
-        iOS Test Screen{'\n'}App is Working!{'\n'}{'\n'}✅ Auto-Build Test v1.1
+        iOS Test Screen{'\n'}App is Working!{'\n'}{'\n'}✅ Auto-Build Test v1.2{'\n'}🔧 Fixed Project ID
       </Text>
     </View>
   );

@@ -18,7 +18,7 @@ export default () => {
   return {
     name: "Remove.Help",
     slug: "remove",
-    version: "1.0.2",
+    version: "1.0.3",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "myapp",
@@ -101,7 +101,7 @@ export default () => {
       EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
       router: {},
       eas: {
-        projectId: "194f7ed6-16f4-4b42-9465-0e21677d7b95"
+        projectId: "9f411f8d-1981-4660-8527-5513c227e160"
       }
     }
   };
