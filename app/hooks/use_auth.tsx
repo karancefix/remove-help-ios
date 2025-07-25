@@ -1,8 +1,20 @@
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { Platform } from 'react-native';
-import { Session, User } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 import { supabase } from '@/lib/supabase';
+
+// Define types locally to avoid Supabase imports
+interface Session {
+  user: User;
+  access_token: string;
+  refresh_token?: string;
+}
+
+interface User {
+  id: string;
+  email?: string;
+  user_metadata?: any;
+}
 
 interface UserProfile {
   id: string;

@@ -3,29 +3,18 @@ const { getDefaultConfig } = require('expo/metro-config');
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-// Fix iOS Node.js module resolution issues
+// Simple iOS-compatible configuration
 config.resolver.alias = {
   '@': __dirname,
-  // Resolve Node.js modules for React Native
-  'stream': 'readable-stream',
-  'util': 'util',
 };
 
-// Add Node.js polyfills for React Native
-config.resolver.fallback = {
-  'stream': require.resolve('readable-stream'),
-  'http': false,
-  'https': false,
-  'url': false,
-  'fs': false,
-  'net': false,
-  'crypto': false,
-  'util': require.resolve('util'),
-};
-
-// Block problematic modules
+// Block all Supabase modules to prevent Node.js conflicts
 config.resolver.blockList = [
+  /node_modules\/@supabase\/supabase-js/,
   /node_modules\/@supabase\/node-fetch/,
+  /node_modules\/@supabase\/postgrest-js/,
+  /node_modules\/@supabase\/realtime-js/,
+  /node_modules\/@supabase\/gotrue-js/,
 ];
 
 config.transformer.getTransformOptions = async () => ({
