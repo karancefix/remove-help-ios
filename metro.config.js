@@ -21,9 +21,13 @@ config.resolver.fallback = {
   "crypto": false,
 };
 
-// Only block problematic node-fetch module 
+// Block all Supabase modules to prevent Node.js conflicts - use mock client instead
 config.resolver.blockList = [
+  /node_modules\/@supabase\/supabase-js/,
   /node_modules\/@supabase\/node-fetch/,
+  /node_modules\/@supabase\/postgrest-js/,
+  /node_modules\/@supabase\/realtime-js/,
+  /node_modules\/@supabase\/gotrue-js/,
 ];
 
 config.transformer.getTransformOptions = async () => ({
