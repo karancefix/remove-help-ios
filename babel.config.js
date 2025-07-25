@@ -1,14 +1,7 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: [
-      ['babel-preset-expo', { jsxImportSource: 'react' }]
-    ],
-    plugins: [
-      // Required for react-native-reanimated
-      'react-native-reanimated/plugin',
-      // Optimize bundle size
-      ['transform-remove-console', { exclude: ['error', 'warn'] }],
-    ],
+    presets: ['babel-preset-expo'],
+    plugins: [require.resolve('expo-router/babel')],
   };
 };

@@ -18,7 +18,7 @@ export default () => {
   return {
     name: "Remove.Help",
     slug: "remove",
-    version: "1.2.2",
+    version: "1.0.1",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "myapp",
@@ -33,21 +33,7 @@ export default () => {
       bundleIdentifier: "com.remove.help",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
-        NSCameraUsageDescription: "This app uses the camera to allow you to take photos for background removal.",
-        NSPhotoLibraryUsageDescription: "This app accesses your photo library to allow you to select photos for background removal.",
-        NSMicrophoneUsageDescription: "This app may use the microphone for video recording.",
-        CFBundleLocalizations: ["en"],
-        // Prevent crashes on iOS
-        UILaunchStoryboardName: "SplashScreen",
-        UIRequiredDeviceCapabilities: ["armv7"],
-        UIStatusBarStyle: "UIStatusBarStyleDefault",
-        UIViewControllerBasedStatusBarAppearance: false,
-        // Additional crash prevention
-        LSApplicationQueriesSchemes: [],
-        NSAllowsArbitraryLoads: true,
-        UIBackgroundModes: [],
-        // Disable all automatic features that might crash
-        UIApplicationSupportsIndirectInputEvents: true
+        NSCameraUsageDescription: "This app uses the camera to allow you to take photos for background removal."
       }
     },
     android: {
@@ -79,33 +65,30 @@ export default () => {
           "cameraPermission": "This app uses the camera to allow you to take photos for background removal."
         }
       ],
-      [
-        "expo-build-properties",
-        {
-          android: {
-            enableProguardInReleaseBuilds: false,
-            enableShrinkResourcesInReleaseBuilds: false
-          },
-          ios: {
-            deploymentTarget: "15.1",
-            useFrameworks: "static",
-            flipper: false,
-            newArchEnabled: false
+              [
+          "expo-build-properties",
+          {
+            android: {
+              enableProguardInReleaseBuilds: false,
+              enableShrinkResourcesInReleaseBuilds: false
+            },
+            ios: {
+              deploymentTarget: "13.0"
+            }
           }
-        }
-      ]
+        ]
     ],
     experiments: {
       typedRoutes: true
     },
-    owner: "cursor3",
+    owner: "cursor1",
     extra: {
       // Ensure environment variables are available at runtime
       EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
       EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
       router: {},
       eas: {
-        projectId: "9f411f8d-1981-4660-8527-5513c227e160"
+        projectId: "194f7ed6-16f4-4b42-9465-0e21677d7b95"
       }
     }
   };

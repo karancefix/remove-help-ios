@@ -3,24 +3,33 @@ const { getDefaultConfig } = require('expo/metro-config');
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-// Simple iOS-compatible configuration
+// iOS-compatible configuration with Supabase support
 config.resolver.alias = {
   '@': __dirname,
+  // Add polyfills for Node.js modules that Supabase needs
+  'stream': 'readable-stream',
+  'util': 'util',
 };
 
-// Block all Supabase modules to prevent Node.js conflicts
+// Set up resolver fallbacks for Node.js modules
+config.resolver.fallback = {
+  "http": false,
+  "https": false,
+  "url": false,
+  "fs": false,
+  "net": false,
+  "crypto": false,
+};
+
+// Only block problematic node-fetch module 
 config.resolver.blockList = [
-  /node_modules\/@supabase\/supabase-js/,
   /node_modules\/@supabase\/node-fetch/,
-  /node_modules\/@supabase\/postgrest-js/,
-  /node_modules\/@supabase\/realtime-js/,
-  /node_modules\/@supabase\/gotrue-js/,
 ];
 
 config.transformer.getTransformOptions = async () => ({
   transform: {
     experimentalImportSupport: false,
-    inlineRequires: false,
+    inlineRequires: false, // Keep this false for iOS compatibility
   },
 });
 

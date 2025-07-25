@@ -30,7 +30,9 @@ export default function OnboardingFeatures() {
               <View style={styles.imageContainer}>
                 <Text style={styles.imageLabel}>Before</Text>
                 <Image
-                  source={require('../../assets/images/icon.png')}
+                  source={{
+                    uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
+                  }}
                   style={styles.beforeImage}
                 />
               </View>
