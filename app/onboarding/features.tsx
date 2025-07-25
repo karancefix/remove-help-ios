@@ -45,7 +45,7 @@ export default function OnboardingFeatures() {
                 <Text style={styles.imageLabel}>After</Text>
                 <View style={styles.afterImageContainer}>
                   <Image
-                    source={require('../../assets/images/after.png')}
+                    source={{ uri: 'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg' }}
                     style={styles.afterImage}
                   />
                 </View>

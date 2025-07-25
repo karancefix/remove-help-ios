@@ -16,7 +16,7 @@ export default function TestScreen() {
         fontWeight: 'bold',
         textAlign: 'center'
       }}>
-        iOS Test Screen{'\n'}App is Working!{'\n'}{'\n'}✅ Auto-Build Test v1.3{'\n'}🔧 Fixed Owner: cursor3
+        iOS Test Screen{'\n'}App is Working!{'\n'}{'\n'}✅ Auto-Build Test v1.4{'\n'}🔧 Fixed require() issue
       </Text>
     </View>
   );

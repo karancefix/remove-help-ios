@@ -62,7 +62,7 @@ export default function OnboardingWelcome() {
               style={styles.illustration}
             >
               <Image
-                source={require('../../assets/images/icon.png')}
+                source={{ uri: 'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg' }}
                 style={styles.logoImage}
                 resizeMode="contain"
               />
