@@ -18,7 +18,7 @@ export default () => {
   return {
     name: "Remove.Help",
     slug: "remove",
-    version: "1.0.3",
+    version: "1.0.4",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "myapp",
@@ -94,7 +94,7 @@ export default () => {
     experiments: {
       typedRoutes: true
     },
-    owner: "cursor1",
+    owner: "cursor3",
     extra: {
       // Ensure environment variables are available at runtime
       EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
