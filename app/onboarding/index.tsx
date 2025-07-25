@@ -25,9 +25,7 @@ export default function OnboardingWelcome() {
           <View style={styles.heroContainer}>
             <View style={styles.heroCircle}>
               <Image
-                source={{
-                  uri: 'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg',
-                }}
+                source={require('../../assets/images/icon.png')}
                 style={styles.heroImage}
               />
             </View>

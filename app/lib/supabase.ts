@@ -63,22 +63,30 @@ class SimpleSupabaseClient {
         return { data: { session: null }, error: { message: 'Email and password are required' } };
       }
       
+      console.log('Mock login attempt:', { email, password });
+      
       // Mock successful sign in
       const mockSession = {
         user: { 
-          id: '1', 
-          email,
-          user_metadata: { name: email.split('@')[0] }
+          id: 'user-' + Date.now(), 
+          email: email,
+          user_metadata: { 
+            name: email.split('@')[0],
+            full_name: email.split('@')[0] 
+          }
         },
         access_token: 'mock-token-' + Date.now(),
         refresh_token: 'mock-refresh-' + Date.now()
       };
+      
+      console.log('Mock session created:', mockSession);
       
       await AsyncStorage.setItem('supabase.auth.token', JSON.stringify(mockSession));
       this.auth.currentSession = mockSession;
       
       // Notify listeners
       this.auth.listeners.forEach(callback => {
+        console.log('Notifying auth listener of SIGNED_IN');
         callback('SIGNED_IN', mockSession);
       });
       
@@ -113,19 +121,19 @@ class SimpleSupabaseClient {
     }
   };
 
-  // Database mock with proper user profile handling
-  from = (table) => ({
-    select: (columns = '*') => ({
-      eq: (column, value) => ({
-        single: async () => {
-          if (table === 'profiles') {
-            // Get current user from session
-            const session = await AsyncStorage.getItem('supabase.auth.token');
-            if (session) {
-              const parsedSession = JSON.parse(session);
+  // Database mock with proper query chain support
+  from = (table) => {
+    const tableHandler = {
+      select: (columns = '*') => ({
+        eq: (column, value) => ({
+          single: async () => {
+            console.log(`Mock DB: ${table}.select(${columns}).eq(${column}, ${value}).single()`);
+            
+            if (table === 'profiles') {
+              // Return profile for any user ID
               return { 
                 data: { 
-                  id: parsedSession.user.id, 
+                  id: value, // Use the actual user ID being queried
                   credits: 10, 
                   is_pro: false,
                   created_at: new Date().toISOString(),
@@ -134,40 +142,68 @@ class SimpleSupabaseClient {
                 error: null 
               };
             }
+            
+            // Default mock data for other tables
+            return { 
+              data: { 
+                id: value || '1', 
+                credits: 5, 
+                is_pro: false,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              }, 
+              error: null 
+            };
           }
-          
-          // Default mock data
-          return { 
-            data: { 
-              id: '1', 
-              credits: 5, 
-              is_pro: false,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }, 
-            error: null 
-          };
-        }
-      })
-    }),
-    
-    insert: (data) => ({
-      select: () => ({
+        }),
+        
+        // For queries without eq() - return empty array
         single: async () => {
-          // Mock insert response
-          return { 
-            data: { 
-              id: data.id || '1', 
-              ...data,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }, 
-            error: null 
-          };
+          return { data: null, error: { code: 'PGRST116', message: 'No rows found' } };
         }
+      }),
+      
+      insert: (data) => ({
+        select: () => ({
+          single: async () => {
+            console.log(`Mock DB: ${table}.insert(${JSON.stringify(data)})`);
+            // Mock successful insert
+            return { 
+              data: { 
+                id: data.id || 'new-' + Date.now(), 
+                ...data,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              }, 
+              error: null 
+            };
+          }
+        })
+      })
+    };
+    
+    // Add storage mock for gallery
+    if (table === 'processed-images') {
+      tableHandler.storage = {
+        from: () => ({
+          getPublicUrl: () => ({
+            data: { publicUrl: 'https://via.placeholder.com/300x300.png?text=Demo+Image' }
+          })
+        })
+      };
+    }
+    
+    return tableHandler;
+  };
+
+  // Add storage mock at the top level
+  storage = {
+    from: (bucket) => ({
+      getPublicUrl: (path) => ({
+        data: { publicUrl: `https://via.placeholder.com/300x300.png?text=Demo+Image` }
       })
     })
-  });
+  };
 }
 
 export const supabase = new SimpleSupabaseClient(); 
