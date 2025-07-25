@@ -41,7 +41,13 @@ export default () => {
         UILaunchStoryboardName: "SplashScreen",
         UIRequiredDeviceCapabilities: ["armv7"],
         UIStatusBarStyle: "UIStatusBarStyleDefault",
-        UIViewControllerBasedStatusBarAppearance: false
+        UIViewControllerBasedStatusBarAppearance: false,
+        // Additional crash prevention
+        LSApplicationQueriesSchemes: [],
+        NSAllowsArbitraryLoads: true,
+        UIBackgroundModes: [],
+        // Disable all automatic features that might crash
+        UIApplicationSupportsIndirectInputEvents: true
       }
     },
     android: {
@@ -66,14 +72,6 @@ export default () => {
     },
     plugins: [
       "expo-router",
-      "expo-font",
-      "expo-web-browser",
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "This app uses the camera to allow you to take photos for background removal."
-        }
-      ],
       [
         "expo-build-properties",
         {
@@ -86,7 +84,9 @@ export default () => {
             // Add additional iOS build settings to prevent crashes
             useFrameworks: "static",
             // Ensure proper compilation
-            flipper: false
+            flipper: false,
+            // Additional crash prevention
+            newArchEnabled: false
           }
         }
       ]

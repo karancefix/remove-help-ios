@@ -2,12 +2,7 @@ import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, LogBox, View, Text } from 'react-native';
-import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
-import { useFrameworkReady } from '@/hooks/useFrameworkReady';
-import { AuthProvider } from '@/hooks/use_auth';
-import 'react-native-url-polyfill/auto';
-import Constants from 'expo-constants';
 
 // Ignore specific warnings that can cause crashes in production
 LogBox.ignoreLogs([
@@ -23,48 +18,23 @@ LogBox.ignoreLogs([
   'componentWillMount',
 ]);
 
-// Prevent splash screen from auto-hiding
-SplashScreen.preventAutoHideAsync().catch(() => {
-  // Ignore errors if splash screen is already hidden
-});
+// Prevent splash screen from auto-hiding - with error handling
+try {
+  SplashScreen.preventAutoHideAsync();
+} catch (error) {
+  console.warn('SplashScreen.preventAutoHideAsync failed:', error);
+}
 
-// Error boundary component
+// Simple error boundary component
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const handleError = (error) => {
-      console.error('App Error:', error);
-      setError(error);
-      setHasError(true);
-    };
-
-    // Add error handler - only if ErrorUtils is available (React Native)
-    if (Platform.OS !== 'web' && global.ErrorUtils) {
-      const prevHandler = global.ErrorUtils.getGlobalHandler();
-      global.ErrorUtils.setGlobalHandler(handleError);
-      return () => global.ErrorUtils.setGlobalHandler(prevHandler);
-    }
-
-    // For web, use window error handler
-    if (Platform.OS === 'web') {
-      const handleWindowError = (event) => {
-        handleError(event.error || event.message);
-      };
-      window.addEventListener('error', handleWindowError);
-      window.addEventListener('unhandledrejection', (event) => {
-        handleError(event.reason);
-      });
-      
-      return () => {
-        window.removeEventListener('error', handleWindowError);
-        window.removeEventListener('unhandledrejection', handleWindowError);
-      };
-    }
+    console.log('ErrorBoundary mounted');
   }, []);
 
   if (hasError) {
+    console.log('ErrorBoundary - showing error screen');
     return (
       <View style={{ 
         flex: 1, 
@@ -75,110 +45,41 @@ function ErrorBoundary({ children }) {
       }}>
         <Text style={{ 
           fontSize: 18, 
-          marginBottom: 10, 
           color: '#FFFFFF', 
           fontWeight: 'bold',
           textAlign: 'center'
         }}>
-          Something went wrong!
+          App Error - Please Restart
         </Text>
-        <Text style={{ 
-          color: '#FFFFFF', 
-          textAlign: 'center',
-          fontSize: 14,
-          marginBottom: 20
-        }}>
-          Please restart the app
-        </Text>
-        {__DEV__ && (
-          <Text style={{ 
-            color: '#FFFFFF', 
-            fontSize: 12,
-            textAlign: 'center'
-          }}>
-            {error?.toString()}
-          </Text>
-        )}
       </View>
     );
   }
 
-  return children;
+  try {
+    return children;
+  } catch (error) {
+    console.error('ErrorBoundary caught error:', error);
+    setHasError(true);
+    return null;
+  }
 }
 
 export default function RootLayout() {
-  useFrameworkReady();
-  const [appIsReady, setAppIsReady] = useState(false);
-
-  const [fontsLoaded, fontError] = useFonts({
-    'Inter-Regular': Inter_400Regular,
-    'Inter-Medium': Inter_500Medium,
-    'Inter-SemiBold': Inter_600SemiBold,
-    'Inter-Bold': Inter_700Bold,
-  });
-
-  useEffect(() => {
-    async function prepare() {
-      try {
-        // Wait for fonts to load
-        if (fontsLoaded || fontError) {
-          // Add a small delay to ensure everything is loaded
-          await new Promise(resolve => setTimeout(resolve, 500));
-          setAppIsReady(true);
-        }
-      } catch (e) {
-        console.warn('Error during app preparation:', e);
-        // Even if there's an error, mark app as ready to prevent infinite loading
-        setAppIsReady(true);
-      }
-    }
-
-    prepare();
-  }, [fontsLoaded, fontError]);
-
-  useEffect(() => {
-    if (appIsReady) {
-      // Hide splash screen when app is ready
-      SplashScreen.hideAsync().catch(() => {
-        // Ignore errors if splash screen is already hidden
-      });
-    }
-  }, [appIsReady]);
-
-  useEffect(() => {
-    // Add debug logs
-    console.log('App starting...');
-    console.log('Expo Constants:', {
-      expoConfig: Constants.expoConfig,
-      extra: Constants.expoConfig?.extra
-    });
-  }, []);
-
-  // Show loading screen while fonts are loading
-  if (!appIsReady) {
-    return (
-      <View style={{ flex: 1, backgroundColor: '#facc15', justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' }}>Loading...</Text>
-      </View>
-    );
-  }
-
+  console.log('RootLayout rendering...');
+  
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="onboarding" />
-            <Stack.Screen name="auth" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="subscription" />
-            <Stack.Screen name="payment-return" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </>
-      </AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="test" />
+        <Stack.Screen name="onboarding" />
+        <Stack.Screen name="auth" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="subscription" />
+        <Stack.Screen name="payment-return" />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      <StatusBar style="auto" />
     </ErrorBoundary>
   );
 }

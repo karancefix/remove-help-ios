@@ -1,37 +1,45 @@
 import { useEffect } from 'react';
 import { router } from 'expo-router';
 import { View, Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Index() {
   useEffect(() => {
-    const checkOnboarding = async () => {
+    const navigate = async () => {
       try {
-        // Check if user has seen onboarding
-        const hasSeenOnboarding = await AsyncStorage.getItem('hasSeenOnboarding');
+        console.log('Index screen loaded');
         
-        // Add a small delay to prevent flash
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Simple delay before navigation
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        if (hasSeenOnboarding === 'true') {
-          router.replace('/(tabs)');
-        } else {
-          router.replace('/onboarding');
-        }
+        // Go to test screen first to verify basic functionality
+        router.replace('/test');
       } catch (error) {
-        console.error('Error checking onboarding status:', error);
-        // Default to onboarding if there's an error
-        router.replace('/onboarding');
+        console.error('Navigation error:', error);
+                 // Still try to navigate even if there's an error
+         setTimeout(() => {
+           router.replace('/test');
+         }, 1000);
       }
     };
 
-    checkOnboarding();
+    navigate();
   }, []);
 
-  // Show loading screen while checking onboarding status
+  // Show loading screen while navigating
   return (
-    <View style={{ flex: 1, backgroundColor: '#facc15', justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' }}>Loading...</Text>
+    <View style={{ 
+      flex: 1, 
+      backgroundColor: '#facc15', 
+      justifyContent: 'center', 
+      alignItems: 'center' 
+    }}>
+      <Text style={{ 
+        color: '#FFFFFF', 
+        fontSize: 18, 
+        fontWeight: 'bold' 
+      }}>
+        Welcome...
+      </Text>
     </View>
   );
 }

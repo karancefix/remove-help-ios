@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   featureTitle: {
     fontSize: 32,
-    fontFamily: 'Inter-Bold',
+    fontWeight: 'bold',
     color: '#1F2937',
     textAlign: 'center',
     marginBottom: 40,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   imageLabel: {
     fontSize: 14,
-    fontFamily: 'Inter-Medium',
+    fontWeight: '500',
     color: '#6B7280',
     marginBottom: 12,
   },
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   arrowText: {
     fontSize: 24,
     color: '#FFA500',
-    fontFamily: 'Inter-Bold',
+    fontWeight: 'bold',
   },
   afterImageContainer: {
     position: 'relative',
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    fontFamily: 'Inter-Regular',
+    fontWeight: 'normal',
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 24,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: '#6B7280',
     fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
+    fontWeight: '600',
   },
   nextButton: {
     flex: 1,
@@ -207,6 +207,6 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
+    fontWeight: '600',
   },
 });
