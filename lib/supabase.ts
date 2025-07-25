@@ -1,6 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import 'react-native-url-polyfill/auto';
+// Temporarily disabled Supabase to fix iOS Node.js module issues
+// import { createClient } from '@supabase/supabase-js';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import 'react-native-url-polyfill/auto';
 
 // Get environment variables with fallbacks
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
@@ -36,22 +37,25 @@ if (__DEV__) {
   }
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Mock supabase export for iOS compatibility
+export const supabase = {
   auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-    flowType: 'pkce',
+    getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    signInWithPassword: () => Promise.resolve({ error: new Error('Supabase disabled') }),
+    signUp: () => Promise.resolve({ error: new Error('Supabase disabled') }),
+    signOut: () => Promise.resolve({ error: new Error('Supabase disabled') }),
   },
-  global: {
-    headers: {
-      'X-Client-Info': 'remove-help-mobile',
-    },
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
-    },
-  },
-});
+  from: () => ({
+    select: () => ({
+      eq: () => ({
+        single: () => Promise.resolve({ data: null, error: new Error('Supabase disabled') })
+      })
+    }),
+    insert: () => ({
+      select: () => ({
+        single: () => Promise.resolve({ data: null, error: new Error('Supabase disabled') })
+      })
+    })
+  })
+};

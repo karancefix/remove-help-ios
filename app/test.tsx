@@ -16,7 +16,7 @@ export default function TestScreen() {
         fontWeight: 'bold',
         textAlign: 'center'
       }}>
-        iOS Test Screen{'\n'}App is Working!{'\n'}{'\n'}✅ Auto-Build Test v1.4{'\n'}🔧 Fixed require() issue
+        iOS Test Screen{'\n'}App is Working!{'\n'}{'\n'}✅ Auto-Build Test v1.5{'\n'}🔧 Disabled Supabase/Node.js modules
       </Text>
     </View>
   );

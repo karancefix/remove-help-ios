@@ -1,8 +1,6 @@
 import { Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, LogBox, View, Text } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
 
 // Ignore specific warnings that can cause crashes in production
 LogBox.ignoreLogs([
@@ -18,12 +16,7 @@ LogBox.ignoreLogs([
   'componentWillMount',
 ]);
 
-// Prevent splash screen from auto-hiding - with error handling
-try {
-  SplashScreen.preventAutoHideAsync();
-} catch (error) {
-  console.warn('SplashScreen.preventAutoHideAsync failed:', error);
-}
+// Remove splash screen handling that was causing issues
 
 // Simple error boundary component
 function ErrorBoundary({ children }) {
