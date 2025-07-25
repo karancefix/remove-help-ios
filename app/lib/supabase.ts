@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import 'react-native-url-polyfill/auto';
 
 // Get environment variables with fallbacks
 const supabaseUrl = 
@@ -23,6 +24,15 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
     headers: {
       'X-Client-Info': 'remove-help-mobile',
+    },
+    fetch: (url, options = {}) => {
+      // Use native fetch instead of node-fetch for iOS compatibility
+      return fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+        },
+      });
     },
   },
 }); 
