@@ -40,21 +40,65 @@ function ErrorBoundary({ children }) {
       setHasError(true);
     };
 
-    // Add error handler
-    if (!global.ErrorUtils) {
-      global.ErrorUtils = require('ErrorUtils');
+    // Add error handler - only if ErrorUtils is available (React Native)
+    if (Platform.OS !== 'web' && global.ErrorUtils) {
+      const prevHandler = global.ErrorUtils.getGlobalHandler();
+      global.ErrorUtils.setGlobalHandler(handleError);
+      return () => global.ErrorUtils.setGlobalHandler(prevHandler);
     }
-    const prevHandler = global.ErrorUtils.getGlobalHandler();
-    global.ErrorUtils.setGlobalHandler(handleError);
 
-    return () => global.ErrorUtils.setGlobalHandler(prevHandler);
+    // For web, use window error handler
+    if (Platform.OS === 'web') {
+      const handleWindowError = (event) => {
+        handleError(event.error || event.message);
+      };
+      window.addEventListener('error', handleWindowError);
+      window.addEventListener('unhandledrejection', (event) => {
+        handleError(event.reason);
+      });
+      
+      return () => {
+        window.removeEventListener('error', handleWindowError);
+        window.removeEventListener('unhandledrejection', handleWindowError);
+      };
+    }
   }, []);
 
   if (hasError) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text style={{ fontSize: 18, marginBottom: 10 }}>Something went wrong!</Text>
-        <Text style={{ color: 'red' }}>{error?.toString()}</Text>
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        padding: 20,
+        backgroundColor: '#facc15'
+      }}>
+        <Text style={{ 
+          fontSize: 18, 
+          marginBottom: 10, 
+          color: '#FFFFFF', 
+          fontWeight: 'bold',
+          textAlign: 'center'
+        }}>
+          Something went wrong!
+        </Text>
+        <Text style={{ 
+          color: '#FFFFFF', 
+          textAlign: 'center',
+          fontSize: 14,
+          marginBottom: 20
+        }}>
+          Please restart the app
+        </Text>
+        {__DEV__ && (
+          <Text style={{ 
+            color: '#FFFFFF', 
+            fontSize: 12,
+            textAlign: 'center'
+          }}>
+            {error?.toString()}
+          </Text>
+        )}
       </View>
     );
   }
@@ -75,7 +119,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     async function prepare() {
-  useFrameworkReady();
       try {
         // Wait for fonts to load
         if (fontsLoaded || fontError) {

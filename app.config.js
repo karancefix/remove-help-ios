@@ -33,7 +33,15 @@ export default () => {
       bundleIdentifier: "com.remove.help",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
-        NSCameraUsageDescription: "This app uses the camera to allow you to take photos for background removal."
+        NSCameraUsageDescription: "This app uses the camera to allow you to take photos for background removal.",
+        NSPhotoLibraryUsageDescription: "This app accesses your photo library to allow you to select photos for background removal.",
+        NSMicrophoneUsageDescription: "This app may use the microphone for video recording.",
+        CFBundleLocalizations: ["en"],
+        // Prevent crashes on iOS
+        UILaunchStoryboardName: "SplashScreen",
+        UIRequiredDeviceCapabilities: ["armv7"],
+        UIStatusBarStyle: "UIStatusBarStyleDefault",
+        UIViewControllerBasedStatusBarAppearance: false
       }
     },
     android: {
@@ -74,7 +82,11 @@ export default () => {
             enableShrinkResourcesInReleaseBuilds: false
           },
           ios: {
-            deploymentTarget: "15.1"
+            deploymentTarget: "15.1",
+            // Add additional iOS build settings to prevent crashes
+            useFrameworks: "static",
+            // Ensure proper compilation
+            flipper: false
           }
         }
       ]

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { Platform } from 'react-native';
 import { Session, User } from '@supabase/supabase-js';
+import Constants from 'expo-constants';
 import { supabase } from '@/lib/supabase';
 
 interface UserProfile {
@@ -30,14 +31,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Add debug logs only in development
-    if (__DEV__) {
-      console.log('App starting...');
-      console.log('Expo Constants:', {
-        expoConfig: Constants.expoConfig,
-        extra: Constants.expoConfig?.extra
-      });
-    }
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        // Add debug logs only in development
+        if (__DEV__) {
+          console.log('Auth Provider starting...');
+          console.log('Expo Constants:', {
+            expoConfig: Constants.expoConfig,
+            extra: Constants.expoConfig?.extra
+          });
+        }
+
+        const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Error getting session:', error);

@@ -31,7 +31,9 @@
         "gradleCommand": ":app:bundleRelease"
       },
       "ios": {
-        "resourceClass": "m1-medium"
+        "resourceClass": "m1-medium",
+        "buildConfiguration": "Release",
+        "scheme": "remove"
       },
       "env": {
         "NODE_ENV": "production",
