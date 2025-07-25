@@ -1,30 +1,28 @@
-// Temporarily disabled Supabase to fix iOS Node.js module issues
-// import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-console.log('Supabase temporarily disabled for iOS compatibility');
+// Get environment variables with fallbacks
+const supabaseUrl = 
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL ||
+  process.env.EXPO_PUBLIC_SUPABASE_URL ||
+  'https://kpzpsljkpvalemxgzsis.supabase.co';
 
-// Create a mock supabase object to prevent crashes
-const supabase = {
+const supabaseAnonKey = 
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwenBzbGprcHZhbGVteGd6c2lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3MzA0MjcsImV4cCI6MjA2ODMwNjQyN30.XdA0tKO6FiiY_4eztqkeCTA-kqAmIP0KILL_u79wts4';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-    signInWithPassword: () => Promise.resolve({ error: new Error('Supabase disabled') }),
-    signUp: () => Promise.resolve({ error: new Error('Supabase disabled') }),
-    signOut: () => Promise.resolve({ error: new Error('Supabase disabled') }),
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
   },
-  from: () => ({
-    select: () => ({
-      eq: () => ({
-        single: () => Promise.resolve({ data: null, error: new Error('Supabase disabled') })
-      })
-    }),
-    insert: () => ({
-      select: () => ({
-        single: () => Promise.resolve({ data: null, error: new Error('Supabase disabled') })
-      })
-    })
-  })
-};
-
-export { supabase }; 
+  global: {
+    headers: {
+      'X-Client-Info': 'remove-help-mobile',
+    },
+  },
+}); 

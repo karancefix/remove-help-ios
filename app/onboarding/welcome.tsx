@@ -134,14 +134,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
     color: '#1F2937',
     textAlign: 'center',
     marginBottom: 16,
   },
   subtitle: {
     fontSize: 16,
-    fontWeight: 'normal',
+    fontFamily: 'Inter-Regular',
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 24,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
     color: '#1F2937',
   },
   illustrationContainer: {
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   skipButtonText: {
     color: '#6B7280',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
   },
   getStartedButton: {
     flex: 2,
@@ -237,6 +237,6 @@ const styles = StyleSheet.create({
   getStartedButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
   },
 });

@@ -18,7 +18,7 @@ export default () => {
   return {
     name: "Remove.Help",
     slug: "remove",
-    version: "1.0.8",
+    version: "1.1.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "myapp",
@@ -72,6 +72,13 @@ export default () => {
     },
     plugins: [
       "expo-router",
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "This app uses the camera to allow you to take photos for background removal."
+        }
+      ],
       [
         "expo-build-properties",
         {
@@ -81,11 +88,8 @@ export default () => {
           },
           ios: {
             deploymentTarget: "15.1",
-            // Add additional iOS build settings to prevent crashes
             useFrameworks: "static",
-            // Ensure proper compilation
             flipper: false,
-            // Additional crash prevention
             newArchEnabled: false
           }
         }

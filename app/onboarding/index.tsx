@@ -103,13 +103,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
     color: '#1F2937',
     textAlign: 'center',
     marginBottom: 16,
   },
   subtitle: {
     fontSize: 16,
+    fontFamily: 'Inter-Regular',
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 24,
@@ -142,6 +143,6 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
   },
 });
