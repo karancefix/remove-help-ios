@@ -19,56 +19,124 @@ class SimpleSupabaseClient {
     this.apiKey = supabaseAnonKey;
   }
 
-  // Auth mock for iOS compatibility
+  // Auth system with proper state management
   auth = {
+    currentSession: null,
+    listeners: [],
+    
     getSession: async () => {
       try {
         const session = await AsyncStorage.getItem('supabase.auth.token');
-        return { data: { session: session ? JSON.parse(session) : null }, error: null };
+        const parsedSession = session ? JSON.parse(session) : null;
+        this.auth.currentSession = parsedSession;
+        return { data: { session: parsedSession }, error: null };
       } catch (error) {
         return { data: { session: null }, error };
       }
     },
     
     onAuthStateChange: (callback) => {
-      // Simple mock - in production you'd implement proper auth state management
+      this.auth.listeners.push(callback);
+      
+      // Call immediately with current session
+      setTimeout(() => {
+        callback('INITIAL_SESSION', this.auth.currentSession);
+      }, 100);
+      
       return {
         data: {
           subscription: {
-            unsubscribe: () => {}
+            unsubscribe: () => {
+              const index = this.auth.listeners.indexOf(callback);
+              if (index > -1) {
+                this.auth.listeners.splice(index, 1);
+              }
+            }
           }
         }
       };
     },
     
     signInWithPassword: async ({ email, password }) => {
-      // Mock successful sign in for demo
+      // Basic validation for demo
+      if (!email || !password) {
+        return { data: { session: null }, error: { message: 'Email and password are required' } };
+      }
+      
+      // Mock successful sign in
       const mockSession = {
-        user: { id: '1', email },
-        access_token: 'mock-token',
-        refresh_token: 'mock-refresh'
+        user: { 
+          id: '1', 
+          email,
+          user_metadata: { name: email.split('@')[0] }
+        },
+        access_token: 'mock-token-' + Date.now(),
+        refresh_token: 'mock-refresh-' + Date.now()
       };
+      
       await AsyncStorage.setItem('supabase.auth.token', JSON.stringify(mockSession));
+      this.auth.currentSession = mockSession;
+      
+      // Notify listeners
+      this.auth.listeners.forEach(callback => {
+        callback('SIGNED_IN', mockSession);
+      });
+      
       return { data: { session: mockSession }, error: null };
     },
     
     signUp: async ({ email, password }) => {
-      // Mock successful sign up for demo
-      return { data: { user: { id: '1', email } }, error: null };
+      if (!email || !password) {
+        return { data: { user: null }, error: { message: 'Email and password are required' } };
+      }
+      
+      // Mock successful sign up
+      const mockUser = { 
+        id: 'new-' + Date.now(), 
+        email,
+        user_metadata: { name: email.split('@')[0] }
+      };
+      
+      return { data: { user: mockUser }, error: null };
     },
     
     signOut: async () => {
       await AsyncStorage.removeItem('supabase.auth.token');
+      this.auth.currentSession = null;
+      
+      // Notify listeners
+      this.auth.listeners.forEach(callback => {
+        callback('SIGNED_OUT', null);
+      });
+      
       return { error: null };
     }
   };
 
-  // Database mock for iOS compatibility
+  // Database mock with proper user profile handling
   from = (table) => ({
     select: (columns = '*') => ({
       eq: (column, value) => ({
         single: async () => {
-          // Mock data response
+          if (table === 'profiles') {
+            // Get current user from session
+            const session = await AsyncStorage.getItem('supabase.auth.token');
+            if (session) {
+              const parsedSession = JSON.parse(session);
+              return { 
+                data: { 
+                  id: parsedSession.user.id, 
+                  credits: 10, 
+                  is_pro: false,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                }, 
+                error: null 
+              };
+            }
+          }
+          
+          // Default mock data
           return { 
             data: { 
               id: '1', 
@@ -89,7 +157,7 @@ class SimpleSupabaseClient {
           // Mock insert response
           return { 
             data: { 
-              id: '1', 
+              id: data.id || '1', 
               ...data,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()

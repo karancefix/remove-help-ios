@@ -30,9 +30,7 @@ export default function OnboardingFeatures() {
               <View style={styles.imageContainer}>
                 <Text style={styles.imageLabel}>Before</Text>
                 <Image
-                  source={{
-                    uri: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
-                  }}
+                  source={require('../../assets/images/icon.png')}
                   style={styles.beforeImage}
                 />
               </View>
@@ -45,7 +43,7 @@ export default function OnboardingFeatures() {
                 <Text style={styles.imageLabel}>After</Text>
                 <View style={styles.afterImageContainer}>
                   <Image
-                    source={{ uri: 'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg' }}
+                    source={require('../../assets/images/after.png')}
                     style={styles.afterImage}
                   />
                 </View>
